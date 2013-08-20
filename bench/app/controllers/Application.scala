@@ -1,0 +1,45 @@
+package controllers
+
+import play.api._
+import play.api.mvc._
+import play.api.libs.iteratee.Enumerator
+import scala.concurrent.Future
+
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
+
+object Application extends Controller {
+
+  def helloworld = Action(parse.empty) { request =>
+    Ok("Hello world.")
+  }
+
+  def download(length: Int) = Action(parse.empty) { request =>
+    Ok(new Array[Byte](length))
+  }
+
+  def downloadChunked(length: Int) = Action(parse.empty) { request =>
+
+    @volatile
+    var remaining = length
+    val maxArraySize = 4 * 1024
+
+    val arrayEnum = Enumerator.generateM {
+      val arraySize = Math.min(remaining, maxArraySize)
+      val optArray = if (arraySize == 0) None else {
+        remaining -= arraySize
+        Some(new Array[Byte](arraySize))
+      }
+      Future.successful(optArray)
+    }
+
+    SimpleResult(
+      header = ResponseHeader(200),
+      body = arrayEnum
+    )
+  }
+
+  def upload = Action(parse.raw) { request =>
+    Ok("upload")
+  }
+
+}
