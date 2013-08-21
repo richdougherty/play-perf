@@ -28,8 +28,16 @@ Version = namedtuple('Version', ['name'])
 masterVersion = Version('master')
 itTrampVersion = Version('it-tramp')
 playTrampVersion = Version('play-tramp')
+itInlineVersion = Version('it-inline')
+reqOptsVersion = Version('req-opts')
 
-versions = [masterVersion, itTrampVersion, playTrampVersion]
+versions = [
+	masterVersion,
+	itTrampVersion,
+	playTrampVersion,
+	itInlineVersion,
+	reqOptsVersion
+]
 
 Build = namedtuple('Build', ['app', 'version', 'path'])
 
@@ -37,15 +45,22 @@ builds = [
 	Build(helloworldApp, masterVersion,    'apps/hw-master1/bin/helloworld'),
 	Build(helloworldApp, itTrampVersion,   'apps/hw-perf1/bin/helloworld'),
 	Build(helloworldApp, playTrampVersion, 'apps/hw-st3/bin/helloworld'),
+	Build(helloworldApp, itInlineVersion,  'apps/hw-itinline4/bin/helloworld'),
+	Build(helloworldApp, reqOptsVersion,   'apps/hw-reqopt5/bin/helloworld'),
 	#Build(benchApp,      masterVersion,    'apps/bench-master1/bin/bench'),
 	#Build(benchApp,      itTrampVersion,   'apps/bench-perf2/bin/bench'),
 	#Build(benchApp,      playTrampVersion, 'apps/bench-st3/bin/bench'),
 	Build(bench2App,     masterVersion,    'apps/bench2-master1/bin/bench'),
 	Build(bench2App,     itTrampVersion,   'apps/bench2-perf1/bin/bench'),
 	Build(bench2App,     playTrampVersion, 'apps/bench2-st3/bin/bench'),
+	Build(bench2App,     itInlineVersion,  'apps/bench2-itinline4/bin/bench'),
+	Build(bench2App,     reqOptsVersion,   'apps/bench2-reqopt5/bin/bench'),
 	Build(zentasksApp,   masterVersion,    'apps/zt-master1/bin/zentask'),
 	Build(zentasksApp,   itTrampVersion,   'apps/zt-perf1/bin/zentask'),
 	Build(zentasksApp,   playTrampVersion, 'apps/zt-st3/bin/zentask'),
+	Build(zentasksApp,   itInlineVersion,  'apps/zt-itinline4/bin/zentask'),
+	Build(zentasksApp,   reqOptsVersion,   'apps/zt-reqopt5/bin/zentask'),
+
 ]
 
 Test = namedtuple('Test', ['name', 'appTests'])
@@ -57,12 +72,12 @@ tests = [
 		#AppTest(benchApp, '/helloworld', []),
 		AppTest(bench2App, '/helloworld', []),
 	]),
+	Test('50k-download2', [
+		AppTest(bench2App, '/download/51200', [])
+	]),
 	Test('50k-download-chunked', [
 		#AppTest(benchApp, '/download/51200', []),
 		AppTest(bench2App, '/download-chunked/51200', []) # ['--timeout', '5s']
-	]),
-	Test('50k-download2', [
-		AppTest(bench2App, '/download/51200', [])
 	]),
 	Test('50k-upload', [
 		#AppTest(benchApp, '/upload', ['-M', 'PUT', '--body', '50k.bin']),
@@ -176,8 +191,8 @@ def byName(l):
 	return lambda name: head(filter(lambda x: x.name == name, l))
 
 parser = argparse.ArgumentParser(description='Run benchmarks')
-parser.add_argument('test', nargs='*', type=byName(tests), default=tests)
-parser.add_argument('--version', nargs='*', type=byName(versions), default=versions, dest='versions')
+parser.add_argument('--test', nargs='*', type=byName(tests), default=tests, dest='tests')
+parser.add_argument('--versions', nargs='*', type=byName(versions), default=versions, dest='versions')
 parser.add_argument('--warmup-runs', default=5, type=int, dest='warmupRuns')
 parser.add_argument('--test-runs', default=10, type=int, dest='testRuns')
 parser.add_argument('--connections', default='32', type=int, dest='connections')
@@ -187,10 +202,10 @@ parser.add_argument('--run-duration', default='10s', dest='runDuration')
 args = parser.parse_args()
 #print args
 
-print 'Tests: ' + ', '.join([x.name for x in args.test])
+print 'Tests: ' + ', '.join([x.name for x in args.tests])
 print 'Versions: ' + ', '.join([x.name for x in args.versions])
 
-for test in args.test:
+for test in args.tests:
 	for appTest in test.appTests:
 		for build in filter(lambda b: b.app == appTest.app and b.version in args.versions, builds):
 			print
