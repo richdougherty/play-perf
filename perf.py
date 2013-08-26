@@ -30,12 +30,20 @@ itTrampVersion = Version('it-tramp')
 playTrampVersion = Version('play-tramp')
 itInlineVersion = Version('it-inline')
 reqOptsVersion = Version('req-opts')
+trampListVersion = Version('tramp-list')
 
 versions = [
 	masterVersion,
 	itTrampVersion,
 	playTrampVersion,
 	itInlineVersion,
+	reqOptsVersion,
+	trampListVersion
+]
+
+defaultVersions = [
+	masterVersion,
+	playTrampVersion,
 	reqOptsVersion
 ]
 
@@ -47,6 +55,7 @@ builds = [
 	Build(helloworldApp, playTrampVersion, 'apps/hw-st3/bin/helloworld'),
 	Build(helloworldApp, itInlineVersion,  'apps/hw-itinline4/bin/helloworld'),
 	Build(helloworldApp, reqOptsVersion,   'apps/hw-reqopt5/bin/helloworld'),
+	Build(helloworldApp, trampListVersion, 'apps/hw-tramplist6/bin/helloworld'),
 	#Build(benchApp,      masterVersion,    'apps/bench-master1/bin/bench'),
 	#Build(benchApp,      itTrampVersion,   'apps/bench-perf2/bin/bench'),
 	#Build(benchApp,      playTrampVersion, 'apps/bench-st3/bin/bench'),
@@ -55,11 +64,13 @@ builds = [
 	Build(bench2App,     playTrampVersion, 'apps/bench2-st3/bin/bench'),
 	Build(bench2App,     itInlineVersion,  'apps/bench2-itinline4/bin/bench'),
 	Build(bench2App,     reqOptsVersion,   'apps/bench2-reqopt5/bin/bench'),
+	Build(bench2App,     trampListVersion, 'apps/bench2-tramplist6/bin/bench'),
 	Build(zentasksApp,   masterVersion,    'apps/zt-master1/bin/zentask'),
 	Build(zentasksApp,   itTrampVersion,   'apps/zt-perf1/bin/zentask'),
 	Build(zentasksApp,   playTrampVersion, 'apps/zt-st3/bin/zentask'),
 	Build(zentasksApp,   itInlineVersion,  'apps/zt-itinline4/bin/zentask'),
 	Build(zentasksApp,   reqOptsVersion,   'apps/zt-reqopt5/bin/zentask'),
+	Build(zentasksApp,   trampListVersion, 'apps/zt-tramplist6/bin/zentask'),
 
 ]
 
@@ -192,7 +203,7 @@ def byName(l):
 
 parser = argparse.ArgumentParser(description='Run benchmarks')
 parser.add_argument('--test', nargs='*', type=byName(tests), default=tests, dest='tests')
-parser.add_argument('--versions', nargs='*', type=byName(versions), default=versions, dest='versions')
+parser.add_argument('--versions', nargs='*', type=byName(versions), default=defaultVersions, dest='versions')
 parser.add_argument('--warmup-runs', default=5, type=int, dest='warmupRuns')
 parser.add_argument('--test-runs', default=10, type=int, dest='testRuns')
 parser.add_argument('--connections', default='32', type=int, dest='connections')
