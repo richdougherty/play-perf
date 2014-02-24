@@ -31,6 +31,7 @@ playTrampVersion = Version('play-tramp')
 itInlineVersion = Version('it-inline')
 reqOptsVersion = Version('req-opts')
 trampListVersion = Version('tramp-list')
+master23Version = Version('master-2.3')
 
 versions = [
 	masterVersion,
@@ -38,40 +39,58 @@ versions = [
 	playTrampVersion,
 	itInlineVersion,
 	reqOptsVersion,
-	trampListVersion
+	trampListVersion,
+	master23Version
 ]
 
 defaultVersions = [
-	masterVersion,
-	playTrampVersion,
-	reqOptsVersion
+	# masterVersion,
+	# playTrampVersion,
+	# reqOptsVersion,
+	# trampListVersion,
+	master23Version
 ]
 
-Build = namedtuple('Build', ['app', 'version', 'path'])
+Lang = namedtuple('Lang', ['name'])
+scalaLang = Lang('scala')
+javaLang = Lang('java')
+langs = [scalaLang, javaLang]
+
+defaultLangs = [scalaLang]
+
+Build = namedtuple('Build', ['app', 'lang', 'version', 'path'])
 
 builds = [
-	Build(helloworldApp, masterVersion,    'apps/hw-master1/bin/helloworld'),
-	Build(helloworldApp, itTrampVersion,   'apps/hw-perf1/bin/helloworld'),
-	Build(helloworldApp, playTrampVersion, 'apps/hw-st3/bin/helloworld'),
-	Build(helloworldApp, itInlineVersion,  'apps/hw-itinline4/bin/helloworld'),
-	Build(helloworldApp, reqOptsVersion,   'apps/hw-reqopt5/bin/helloworld'),
-	Build(helloworldApp, trampListVersion, 'apps/hw-tramplist6/bin/helloworld'),
-	#Build(benchApp,      masterVersion,    'apps/bench-master1/bin/bench'),
-	#Build(benchApp,      itTrampVersion,   'apps/bench-perf2/bin/bench'),
-	#Build(benchApp,      playTrampVersion, 'apps/bench-st3/bin/bench'),
-	Build(bench2App,     masterVersion,    'apps/bench2-master1/bin/bench'),
-	Build(bench2App,     itTrampVersion,   'apps/bench2-perf1/bin/bench'),
-	Build(bench2App,     playTrampVersion, 'apps/bench2-st3/bin/bench'),
-	Build(bench2App,     itInlineVersion,  'apps/bench2-itinline4/bin/bench'),
-	Build(bench2App,     reqOptsVersion,   'apps/bench2-reqopt5/bin/bench'),
-	Build(bench2App,     trampListVersion, 'apps/bench2-tramplist6/bin/bench'),
-	Build(zentasksApp,   masterVersion,    'apps/zt-master1/bin/zentask'),
-	Build(zentasksApp,   itTrampVersion,   'apps/zt-perf1/bin/zentask'),
-	Build(zentasksApp,   playTrampVersion, 'apps/zt-st3/bin/zentask'),
-	Build(zentasksApp,   itInlineVersion,  'apps/zt-itinline4/bin/zentask'),
-	Build(zentasksApp,   reqOptsVersion,   'apps/zt-reqopt5/bin/zentask'),
-	Build(zentasksApp,   trampListVersion, 'apps/zt-tramplist6/bin/zentask'),
+	Build(helloworldApp, scalaLang, masterVersion,    'apps/hw-master1/bin/helloworld'),
+	Build(helloworldApp, scalaLang, itTrampVersion,   'apps/hw-perf1/bin/helloworld'),
+	Build(helloworldApp, scalaLang, playTrampVersion, 'apps/hw-st3/bin/helloworld'),
+	Build(helloworldApp, scalaLang, itInlineVersion,  'apps/hw-itinline4/bin/helloworld'),
+	Build(helloworldApp, scalaLang, reqOptsVersion,   'apps/hw-reqopt5/bin/helloworld'),
+	Build(helloworldApp, scalaLang, trampListVersion, 'apps/hw-tramplist6/bin/helloworld'),
+	Build(helloworldApp, scalaLang, master23Version,  'apps/scala-hw-master-2.3/bin/helloworld'),
+	Build(helloworldApp, javaLang,  master23Version,  'apps/java-hw-master-2.3/bin/helloworld'),
 
+	#Build(benchApp,      scalaLang, masterVersion,    'apps/bench-master1/bin/bench'),
+	#Build(benchApp,      scalaLang, itTrampVersion,   'apps/bench-perf2/bin/bench'),
+	#Build(benchApp,      scalaLang, playTrampVersion, 'apps/bench-st3/bin/bench'),
+
+	Build(bench2App,     scalaLang, masterVersion,    'apps/bench2-master1/bin/bench'),
+	Build(bench2App,     scalaLang, itTrampVersion,   'apps/bench2-perf1/bin/bench'),
+	Build(bench2App,     scalaLang, playTrampVersion, 'apps/bench2-st3/bin/bench'),
+	Build(bench2App,     scalaLang, itInlineVersion,  'apps/bench2-itinline4/bin/bench'),
+	Build(bench2App,     scalaLang, reqOptsVersion,   'apps/bench2-reqopt5/bin/bench'),
+	Build(bench2App,     scalaLang, trampListVersion, 'apps/bench2-tramplist6/bin/bench'),
+	Build(bench2App,     scalaLang, master23Version,  'apps/scala-bench-master-2.3/bin/scala-bench'),
+	Build(bench2App,     javaLang,  master23Version,  'apps/java-bench-master-2.3/bin/java-bench'),
+
+	Build(zentasksApp,   scalaLang, masterVersion,    'apps/zt-master1/bin/zentask'),
+	Build(zentasksApp,   scalaLang, itTrampVersion,   'apps/zt-perf1/bin/zentask'),
+	Build(zentasksApp,   scalaLang, playTrampVersion, 'apps/zt-st3/bin/zentask'),
+	Build(zentasksApp,   scalaLang, itInlineVersion,  'apps/zt-itinline4/bin/zentask'),
+	Build(zentasksApp,   scalaLang, reqOptsVersion,   'apps/zt-reqopt5/bin/zentask'),
+	Build(zentasksApp,   scalaLang, trampListVersion, 'apps/zt-tramplist6/bin/zentask'),
+	Build(zentasksApp,   scalaLang, master23Version,  'apps/scala-zt-master-2.3/bin/zentask'),
+	Build(zentasksApp,   javaLang,  master23Version,  'apps/java-zt-master-2.3/bin/zentask'),
 ]
 
 Test = namedtuple('Test', ['name', 'appTests'])
@@ -204,6 +223,7 @@ def byName(l):
 parser = argparse.ArgumentParser(description='Run benchmarks')
 parser.add_argument('--test', nargs='*', type=byName(tests), default=tests, dest='tests')
 parser.add_argument('--versions', nargs='*', type=byName(versions), default=defaultVersions, dest='versions')
+parser.add_argument('--langs', nargs='*', type=byName(langs), default=defaultLangs, dest='langs')
 parser.add_argument('--warmup-runs', default=5, type=int, dest='warmupRuns')
 parser.add_argument('--test-runs', default=10, type=int, dest='testRuns')
 parser.add_argument('--connections', default='32', type=int, dest='connections')
@@ -215,10 +235,11 @@ args = parser.parse_args()
 
 print 'Tests: ' + ', '.join([x.name for x in args.tests])
 print 'Versions: ' + ', '.join([x.name for x in args.versions])
+print 'Langs: ' + ', '.join([x.name for x in args.langs])
 
 for test in args.tests:
 	for appTest in test.appTests:
-		for build in filter(lambda b: b.app == appTest.app and b.version in args.versions, builds):
+		for build in filter(lambda b: b.app == appTest.app and b.version in args.versions and b.lang in args.langs, builds):
 			print
 			print '=== %s/%s ===' % (test.name, build.version.name)
 			testResults = runTest(appTest, build)
