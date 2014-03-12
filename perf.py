@@ -10,7 +10,7 @@ def head(l):
 	if len(l) == 1:
 		return l[0]
 	else:
-		raise Exception("Can't get head, %s items in list" % len(l))
+		raise Exception("Can't get head, %s items in list %s" % (len(l), l))
 
 ##########
 
@@ -20,8 +20,9 @@ helloworldApp = App('helloworld', [])
 zentasksApp = App('zentasks', ['-DapplyEvolutions.default=true'])
 #benchApp = App('bench', [])
 bench2App = App('bench2', [])
+bench3App = App('bench3', [])
 
-apps = [helloworldApp, zentasksApp, bench2App]
+apps = [bench2App, bench3App, helloworldApp, zentasksApp]
 
 Version = namedtuple('Version', ['name'])
 
@@ -32,6 +33,13 @@ itInlineVersion = Version('it-inline')
 reqOptsVersion = Version('req-opts')
 trampListVersion = Version('tramp-list')
 master23Version = Version('master-2.3')
+emptyBodyParserVersion = Version('empty-bodyparser')
+trampoline1Version = Version('trampoline1')
+unicastChunkedVersion = Version('unicast-chunked')
+bodyParserTrampVersion = Version('bodyparser-tramp')
+noValidationVersion = Version('no-validation')
+noJavaMagicLangVersion = Version('no-javamagic-lang')
+langLocaleVersion = Version('lang-locale')
 
 versions = [
 	masterVersion,
@@ -40,7 +48,14 @@ versions = [
 	itInlineVersion,
 	reqOptsVersion,
 	trampListVersion,
-	master23Version
+	master23Version,
+	emptyBodyParserVersion,
+	trampoline1Version,
+	unicastChunkedVersion,
+	bodyParserTrampVersion,
+	noValidationVersion,
+	noJavaMagicLangVersion,
+	langLocaleVersion
 ]
 
 defaultVersions = [
@@ -56,65 +71,99 @@ scalaLang = Lang('scala')
 javaLang = Lang('java')
 langs = [scalaLang, javaLang]
 
-defaultLangs = [scalaLang]
+defaultLangs = [scalaLang, javaLang]
 
 Build = namedtuple('Build', ['app', 'lang', 'version', 'path'])
 
 builds = [
-	Build(helloworldApp, scalaLang, masterVersion,    'apps/hw-master1/bin/helloworld'),
-	Build(helloworldApp, scalaLang, itTrampVersion,   'apps/hw-perf1/bin/helloworld'),
-	Build(helloworldApp, scalaLang, playTrampVersion, 'apps/hw-st3/bin/helloworld'),
-	Build(helloworldApp, scalaLang, itInlineVersion,  'apps/hw-itinline4/bin/helloworld'),
-	Build(helloworldApp, scalaLang, reqOptsVersion,   'apps/hw-reqopt5/bin/helloworld'),
-	Build(helloworldApp, scalaLang, trampListVersion, 'apps/hw-tramplist6/bin/helloworld'),
-	Build(helloworldApp, scalaLang, master23Version,  'apps/scala-hw-master-2.3/bin/helloworld'),
-	Build(helloworldApp, javaLang,  master23Version,  'apps/java-hw-master-2.3/bin/helloworld'),
+	Build(helloworldApp, scalaLang, masterVersion,          'apps/hw-master1/bin/helloworld'),
+	Build(helloworldApp, scalaLang, itTrampVersion,         'apps/hw-perf1/bin/helloworld'),
+	Build(helloworldApp, scalaLang, playTrampVersion,       'apps/hw-st3/bin/helloworld'),
+	Build(helloworldApp, scalaLang, itInlineVersion,        'apps/hw-itinline4/bin/helloworld'),
+	Build(helloworldApp, scalaLang, reqOptsVersion,         'apps/hw-reqopt5/bin/helloworld'),
+	Build(helloworldApp, scalaLang, trampListVersion,       'apps/hw-tramplist6/bin/helloworld'),
+	Build(helloworldApp, scalaLang, master23Version,        'apps/scala-hw-master-2.3/bin/helloworld'),
+	Build(helloworldApp, javaLang,  master23Version,        'apps/java-hw-master-2.3/bin/helloworld'),
+	Build(helloworldApp, scalaLang, bodyParserTrampVersion, 'apps/scala-hw-bodyparser-tramp/bin/helloworld'),
+	Build(helloworldApp, javaLang,  bodyParserTrampVersion, 'apps/java-hw-bodyparser-tramp/bin/helloworld'),
+	Build(helloworldApp, javaLang,  noValidationVersion,    'apps/java-hw-no-validation/bin/helloworld'),
+	Build(helloworldApp, javaLang,  noJavaMagicLangVersion, 'apps/java-hw-no-javamagic-lang/bin/helloworld'),
+	Build(helloworldApp, scalaLang, langLocaleVersion,      'apps/scala-hw-lang-locale/bin/helloworld'),
+	Build(helloworldApp, javaLang,  langLocaleVersion,      'apps/java-hw-lang-locale/bin/helloworld'),
 
 	#Build(benchApp,      scalaLang, masterVersion,    'apps/bench-master1/bin/bench'),
 	#Build(benchApp,      scalaLang, itTrampVersion,   'apps/bench-perf2/bin/bench'),
 	#Build(benchApp,      scalaLang, playTrampVersion, 'apps/bench-st3/bin/bench'),
 
-	Build(bench2App,     scalaLang, masterVersion,    'apps/bench2-master1/bin/bench'),
-	Build(bench2App,     scalaLang, itTrampVersion,   'apps/bench2-perf1/bin/bench'),
-	Build(bench2App,     scalaLang, playTrampVersion, 'apps/bench2-st3/bin/bench'),
-	Build(bench2App,     scalaLang, itInlineVersion,  'apps/bench2-itinline4/bin/bench'),
-	Build(bench2App,     scalaLang, reqOptsVersion,   'apps/bench2-reqopt5/bin/bench'),
-	Build(bench2App,     scalaLang, trampListVersion, 'apps/bench2-tramplist6/bin/bench'),
-	Build(bench2App,     scalaLang, master23Version,  'apps/scala-bench-master-2.3/bin/scala-bench'),
-	Build(bench2App,     javaLang,  master23Version,  'apps/java-bench-master-2.3/bin/java-bench'),
+	Build(bench2App,     scalaLang, masterVersion,          'apps/bench2-master1/bin/bench'),
+	Build(bench2App,     scalaLang, itTrampVersion,         'apps/bench2-perf1/bin/bench'),
+	Build(bench2App,     scalaLang, playTrampVersion,       'apps/bench2-st3/bin/bench'),
+	Build(bench2App,     scalaLang, itInlineVersion,        'apps/bench2-itinline4/bin/bench'),
+	Build(bench2App,     scalaLang, reqOptsVersion,         'apps/bench2-reqopt5/bin/bench'),
+	Build(bench2App,     scalaLang, trampListVersion,       'apps/bench2-tramplist6/bin/bench'),
+	Build(bench2App,     scalaLang, master23Version,        'apps/scala-bench-master-2.3/bin/scala-bench'),
+	Build(bench2App,     scalaLang, bodyParserTrampVersion, 'apps/scala-bench-bodyparser-tramp/bin/scala-bench'),
+	Build(bench2App,     javaLang,  master23Version,        'apps/java-bench-master-2.3/bin/java-bench'),
+	Build(bench2App,     javaLang,  emptyBodyParserVersion, 'apps/java-bench-empty-bodyparser/bin/java-bench'),
+	Build(bench2App,     javaLang,  trampoline1Version,     'apps/java-bench-trampoline1/bin/java-bench'),
+	Build(bench2App,     javaLang,  unicastChunkedVersion,  'apps/java-bench-unicast-chunked/bin/java-bench'),
+	Build(bench2App,     javaLang,  bodyParserTrampVersion, 'apps/java-bench-bodyparser-tramp/bin/java-bench'),
 
-	Build(zentasksApp,   scalaLang, masterVersion,    'apps/zt-master1/bin/zentask'),
-	Build(zentasksApp,   scalaLang, itTrampVersion,   'apps/zt-perf1/bin/zentask'),
-	Build(zentasksApp,   scalaLang, playTrampVersion, 'apps/zt-st3/bin/zentask'),
-	Build(zentasksApp,   scalaLang, itInlineVersion,  'apps/zt-itinline4/bin/zentask'),
-	Build(zentasksApp,   scalaLang, reqOptsVersion,   'apps/zt-reqopt5/bin/zentask'),
-	Build(zentasksApp,   scalaLang, trampListVersion, 'apps/zt-tramplist6/bin/zentask'),
-	Build(zentasksApp,   scalaLang, master23Version,  'apps/scala-zt-master-2.3/bin/zentask'),
-	Build(zentasksApp,   javaLang,  master23Version,  'apps/java-zt-master-2.3/bin/zentask'),
+	Build(bench3App,     scalaLang, bodyParserTrampVersion, 'apps/scala-bench3-bodyparser-tramp/bin/scala-bench'),
+	Build(bench3App,     javaLang,  bodyParserTrampVersion, 'apps/java-bench3-bodyparser-tramp/bin/java-bench'),
+
+	Build(zentasksApp,   scalaLang, masterVersion,          'apps/zt-master1/bin/zentask'),
+	Build(zentasksApp,   scalaLang, itTrampVersion,         'apps/zt-perf1/bin/zentask'),
+	Build(zentasksApp,   scalaLang, playTrampVersion,       'apps/zt-st3/bin/zentask'),
+	Build(zentasksApp,   scalaLang, itInlineVersion,        'apps/zt-itinline4/bin/zentask'),
+	Build(zentasksApp,   scalaLang, reqOptsVersion,         'apps/zt-reqopt5/bin/zentask'),
+	Build(zentasksApp,   scalaLang, trampListVersion,       'apps/zt-tramplist6/bin/zentask'),
+	Build(zentasksApp,   scalaLang, master23Version,        'apps/scala-zt-master-2.3/bin/zentask'),
+	Build(zentasksApp,   scalaLang, bodyParserTrampVersion, 'apps/scala-zt-bodyparser-tramp/bin/zentask'),
+	Build(zentasksApp,   javaLang,  master23Version,        'apps/java-zt-master-2.3/bin/zentask'),
+	Build(zentasksApp,   javaLang,  bodyParserTrampVersion, 'apps/java-zt-bodyparser-tramp/bin/zentask'),
 ]
 
 Test = namedtuple('Test', ['name', 'appTests'])
-AppTest = namedtuple('AppTest', ['app', 'path', 'wrkArgs'])
+AppTest = namedtuple('AppTest', ['app', 'langs', 'path', 'wrkArgs'])
 
 tests = [
-	Test('helloworld-sample', [AppTest(helloworldApp, '/', [])]),
 	Test('simple-result', [
 		#AppTest(benchApp, '/helloworld', []),
-		AppTest(bench2App, '/helloworld', []),
+		AppTest(bench2App, langs, '/helloworld', []),
+		AppTest(bench3App, langs, '/helloworld', []),
 	]),
 	Test('50k-download2', [
-		AppTest(bench2App, '/download/51200', [])
+		AppTest(bench2App, langs, '/download/51200', []),
+		AppTest(bench3App, langs, '/download/51200', []),
 	]),
 	Test('50k-download-chunked', [
 		#AppTest(benchApp, '/download/51200', []),
-		AppTest(bench2App, '/download-chunked/51200', []) # ['--timeout', '5s']
+		AppTest(bench2App, langs, '/download-chunked/51200', []),
+		AppTest(bench3App, langs, '/download-chunked/51200', []),
 	]),
 	Test('50k-upload', [
 		#AppTest(benchApp, '/upload', ['-M', 'PUT', '--body', '50k.bin']),
-		AppTest(bench2App, '/upload', ['-M', 'PUT', '--body', '50k.bin']),
+		AppTest(bench2App, langs, '/upload', ['-M', 'PUT', '--body', '50k.bin']),
+		AppTest(bench3App, langs, '/upload', ['-M', 'PUT', '--body', '50k.bin']),
+	]),
+	Test('template', [
+		AppTest(bench3App, langs, '/template/simple', []),
+	]),
+	Test('template-lang', [
+		AppTest(bench3App, langs, '/template/lang', []),
+	]),
+	Test('json-encoding', [
+		AppTest(bench3App, langs, '/json/encode', []),
+	]),
+	Test('json-encoding-streaming', [
+		AppTest(bench3App, [javaLang], '/json/encode/streaming', []),
+	]),
+	Test('helloworld-sample', [
+		AppTest(helloworldApp, langs, '/', [])
 	]),
 	Test('zentasks-sample', [
-		AppTest(zentasksApp, '/', [
+		AppTest(zentasksApp, langs, '/', [
 		'-H',
 		'Cookie: PLAY_SESSION="0a28e06a3342d31a45af7182fc4598c202d11890-email=guillaume%40sample.com"']),
 	])
@@ -166,16 +215,19 @@ def drainPipe(process):
 	if r: os.read(f.fileno(), 4096) # safe to read this size?
 
 def startApp(app, build):
-	appCommand = [build.path] + app.args
-	#print appCommand
-	appProcess = subprocess.Popen(appCommand, stdout=subprocess.PIPE)
-	stdoutIter = iter(appProcess.stdout.readline, '')
-	for line in stdoutIter:
-		if 'Listening for HTTP' in line: break
-	return appProcess
+	try:
+		appCommand = [build.path] + app.args
+		appProcess = subprocess.Popen(appCommand, stdout=subprocess.PIPE)
+		stdoutIter = iter(appProcess.stdout.readline, '')
+		for line in stdoutIter:
+			if 'Listening for HTTP' in line: break
+		return appProcess
+	except:
+		print 'Error with command:', appCommand
+		raise
 
 def runWrk(appTest, allowErrors=False):
-	wrkCommand = ['wrk', '-t%s' % args.threads, '-c%s' % args.connections, '-d'+args.runDuration] + \
+	wrkCommand = ['wrk', '-t%s' % args.threads, '-c%s' % args.connections, '-d%ss'%args.runDuration] + \
 								appTest.wrkArgs + \
 								['http://127.0.0.1:9000'+appTest.path]
 	#print wrkCommand
@@ -218,31 +270,50 @@ def runTest(appTest, build):
 #############
 
 def byName(l):
-	return lambda name: head(filter(lambda x: x.name == name, l))
+	def lookup(name):
+		matching = filter(lambda x: x.name == name, l)
+		if not matching:
+				raise Exception("Can't find %s in list %s" % (name, l))
+		return head(matching)
+	return lookup
 
 parser = argparse.ArgumentParser(description='Run benchmarks')
 parser.add_argument('--test', nargs='*', type=byName(tests), default=tests, dest='tests')
 parser.add_argument('--versions', nargs='*', type=byName(versions), default=defaultVersions, dest='versions')
 parser.add_argument('--langs', nargs='*', type=byName(langs), default=defaultLangs, dest='langs')
-parser.add_argument('--warmup-runs', default=5, type=int, dest='warmupRuns')
-parser.add_argument('--test-runs', default=10, type=int, dest='testRuns')
+parser.add_argument('--warmup-runs', default=2, type=int, dest='warmupRuns')
+parser.add_argument('--test-runs', default=3, type=int, dest='testRuns')
 parser.add_argument('--connections', default='32', type=int, dest='connections')
 parser.add_argument('--threads', default='16', type=int, dest='threads')
-parser.add_argument('--run-duration', default='10s', dest='runDuration')
+parser.add_argument('--run-duration', default=10, type=int, dest='runDuration')
 
 args = parser.parse_args()
 #print args
 
-print 'Tests: ' + ', '.join([x.name for x in args.tests])
-print 'Versions: ' + ', '.join([x.name for x in args.versions])
-print 'Langs: ' + ', '.join([x.name for x in args.langs])
+print 'Tests: ' + ' '.join([x.name for x in args.tests])
+print 'Versions: ' + ' '.join([x.name for x in args.versions])
+print 'Langs: ' + ' '.join([x.name for x in args.langs])
 
+Run = namedtuple('Run', ['test', 'appTest', 'build'])
+
+runs = []
 for test in args.tests:
 	for appTest in test.appTests:
-		for build in filter(lambda b: b.app == appTest.app and b.version in args.versions and b.lang in args.langs, builds):
-			print
-			print '=== %s/%s ===' % (test.name, build.version.name)
-			testResults = runTest(appTest, build)
-			print 'AVERAGE %12.2f' % (sum([r.rps for r in testResults])/len(testResults))
+		for build in filter(lambda b: b.app == appTest.app and b.version in args.versions and b.lang in args.langs and b.lang in appTest.langs, builds):
+			run = Run(test, appTest, build)
+			runs.append(run)
+
+print 'Plan:'
+for run in runs:
+	print '* %s/%s/%s' % (run.test.name, run.build.version.name, run.build.lang.name)
+
+estTime = ((args.warmupRuns + args.testRuns) * args.runDuration * len(runs))
+print 'Est time: %sm%ss' % (estTime / 60, estTime % 60)
+
+for run in runs:
+	print
+	print '=== %s/%s/%s ===' % (run.test.name, run.build.version.name, run.build.lang.name)
+	testResults = runTest(run.appTest, run.build)
+	print 'AVERAGE %12.2f' % (sum([r.rps for r in testResults])/len(testResults))
 
 

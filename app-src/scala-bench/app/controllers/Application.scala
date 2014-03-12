@@ -3,6 +3,7 @@ package controllers
 import play.api._
 import play.api.mvc._
 import play.api.libs.iteratee.Enumerator
+import play.api.libs.json.Json
 import scala.concurrent.Future
 
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -40,6 +41,18 @@ object Application extends Controller {
 
   def upload = Action(parse.raw) { request =>
     Ok("upload")
+  }
+
+  def templateSimple = Action(parse.empty) { request =>
+    Ok(views.html.simple("simple"))
+  }
+
+  def templateLang = Action(parse.empty) { request =>
+    Ok(views.html.lang())
+  }
+
+  def jsonEncode = Action(parse.empty) { request =>
+    Ok(Json.obj("message" -> "Hello, World!"))
   }
 
 }

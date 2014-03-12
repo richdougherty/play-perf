@@ -6,7 +6,10 @@ libraryDependencies ++= Seq(
   javaJdbc,
   javaEbean,
   javaWs,
-  cache
+  cache,
+  json
 )
+
+javacOptions ++= Seq("-Xlint:deprecation")
 
 play.Project.playJavaSettings

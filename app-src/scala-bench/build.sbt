@@ -6,7 +6,8 @@ libraryDependencies ++= Seq(
   jdbc,
   anorm,
   cache,
-  ws
+  ws,
+  json
 )     
 
 play.Project.playScalaSettings
