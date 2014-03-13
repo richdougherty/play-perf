@@ -1,4 +1,11 @@
+/app-src/*-bench/target
+/app-src/*-bench/project/target
+/app-src/*-bench/project/project/target
+/app-src/*-bench/.*
+/app-src/*-bench/logs
+/app-src/*-bench/bin
 /apps
 /dists
 /bench/target
-/logs*
+/*logs*
+/todelete
