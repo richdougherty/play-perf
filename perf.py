@@ -21,8 +21,12 @@ zentasksApp = App('zentasks', ['-DapplyEvolutions.default=true'])
 #benchApp = App('bench', [])
 bench2App = App('bench2', [])
 bench3App = App('bench3', [])
+techEmpNoDb = App('techemp-nodb', [])
+techEmp = App('techemp', [])
+techEmpEmpty = App('techemp-empty', [])
 
-apps = [bench2App, bench3App, helloworldApp, zentasksApp]
+apps = [bench2App, bench3App, helloworldApp, zentasksApp, techEmpNoDb, techEmp, techEmpEmpty]
+defaultApps = apps
 
 Version = namedtuple('Version', ['name'])
 
@@ -32,6 +36,8 @@ playTrampVersion = Version('play-tramp')
 itInlineVersion = Version('it-inline')
 reqOptsVersion = Version('req-opts')
 trampListVersion = Version('tramp-list')
+release220Version = Version('2.2.0')
+release222Version = Version('2.2.2')
 master23Version = Version('master-2.3')
 emptyBodyParserVersion = Version('empty-bodyparser')
 trampoline1Version = Version('trampoline1')
@@ -40,6 +46,8 @@ bodyParserTrampVersion = Version('bodyparser-tramp')
 noValidationVersion = Version('no-validation')
 noJavaMagicLangVersion = Version('no-javamagic-lang')
 langLocaleVersion = Version('lang-locale')
+jreqLazyMapsVersion = Version('jreq-lazy-maps')
+routerInitVersion = Version('router-init')
 
 versions = [
 	masterVersion,
@@ -49,13 +57,17 @@ versions = [
 	reqOptsVersion,
 	trampListVersion,
 	master23Version,
+	release220Version,
+	release222Version,
 	emptyBodyParserVersion,
 	trampoline1Version,
 	unicastChunkedVersion,
 	bodyParserTrampVersion,
 	noValidationVersion,
 	noJavaMagicLangVersion,
-	langLocaleVersion
+	langLocaleVersion,
+	jreqLazyMapsVersion,
+	routerInitVersion
 ]
 
 defaultVersions = [
@@ -109,7 +121,9 @@ builds = [
 	Build(bench2App,     javaLang,  unicastChunkedVersion,  'apps/java-bench-unicast-chunked/bin/java-bench'),
 	Build(bench2App,     javaLang,  bodyParserTrampVersion, 'apps/java-bench-bodyparser-tramp/bin/java-bench'),
 
+	Build(bench3App,     scalaLang, master23Version,        'apps/scala-bench3-master-2.3/bin/scala-bench'),
 	Build(bench3App,     scalaLang, bodyParserTrampVersion, 'apps/scala-bench3-bodyparser-tramp/bin/scala-bench'),
+	Build(bench3App,     javaLang,  master23Version,        'apps/java-bench3-master-2.3/bin/java-bench'),
 	Build(bench3App,     javaLang,  bodyParserTrampVersion, 'apps/java-bench3-bodyparser-tramp/bin/java-bench'),
 
 	Build(zentasksApp,   scalaLang, masterVersion,          'apps/zt-master1/bin/zentask'),
@@ -122,6 +136,17 @@ builds = [
 	Build(zentasksApp,   scalaLang, bodyParserTrampVersion, 'apps/scala-zt-bodyparser-tramp/bin/zentask'),
 	Build(zentasksApp,   javaLang,  master23Version,        'apps/java-zt-master-2.3/bin/zentask'),
 	Build(zentasksApp,   javaLang,  bodyParserTrampVersion, 'apps/java-zt-bodyparser-tramp/bin/zentask'),
+
+	Build(techEmpNoDb,   scalaLang, release220Version,      'apps/te-scala-nodb-2.20/bin/play-scala'),
+	Build(techEmpNoDb,   javaLang,  release220Version,      'apps/te-java-nodb-2.20/bin/play-java-jpa'),
+	Build(techEmp,       javaLang,  release222Version,      'apps/te-java-2.2.2/bin/play-java'),
+	Build(techEmp,       javaLang,  bodyParserTrampVersion, 'apps/te-java-bodyparser-tramp/bin/play-java'),
+	Build(techEmp,       scalaLang, jreqLazyMapsVersion,    'apps/te-scala-jreq-lazy-maps/bin/play-scala'),
+	Build(techEmp,       javaLang,  jreqLazyMapsVersion,    'apps/te-java-jreq-lazy-maps/bin/play-java'),
+	Build(techEmpEmpty,  scalaLang, jreqLazyMapsVersion,    'apps/te-empty-scala-jreq-lazy-maps/bin/play-scala'),
+	Build(techEmpEmpty,  javaLang,  jreqLazyMapsVersion,    'apps/te-empty-java-jreq-lazy-maps/bin/play-java'),
+	Build(techEmpEmpty,  scalaLang, routerInitVersion,      'apps/te-empty-scala-router-init/bin/play-scala'),
+	Build(techEmpEmpty,  javaLang,  routerInitVersion,      'apps/te-empty-java-router-init/bin/play-java'),
 ]
 
 Test = namedtuple('Test', ['name', 'appTests'])
@@ -166,7 +191,12 @@ tests = [
 		AppTest(zentasksApp, langs, '/', [
 		'-H',
 		'Cookie: PLAY_SESSION="0a28e06a3342d31a45af7182fc4598c202d11890-email=guillaume%40sample.com"']),
-	])
+	]),
+	Test('techemp-json-encoding', [
+		AppTest(techEmpNoDb, langs, '/json', []),
+		AppTest(techEmp, langs, '/json', []),
+		AppTest(techEmpEmpty, langs, '/json', []),
+	]),
 ]
 
 #########
@@ -279,6 +309,7 @@ def byName(l):
 
 parser = argparse.ArgumentParser(description='Run benchmarks')
 parser.add_argument('--test', nargs='*', type=byName(tests), default=tests, dest='tests')
+parser.add_argument('--apps', nargs='*', type=byName(apps), default=defaultApps, dest='apps')
 parser.add_argument('--versions', nargs='*', type=byName(versions), default=defaultVersions, dest='versions')
 parser.add_argument('--langs', nargs='*', type=byName(langs), default=defaultLangs, dest='langs')
 parser.add_argument('--warmup-runs', default=2, type=int, dest='warmupRuns')
@@ -296,23 +327,32 @@ print 'Langs: ' + ' '.join([x.name for x in args.langs])
 
 Run = namedtuple('Run', ['test', 'appTest', 'build'])
 
+def runId(run):
+	return '/'.join([run.test.name, run.appTest.app.name, run.build.version.name, run.build.lang.name])
+
 runs = []
 for test in args.tests:
 	for appTest in test.appTests:
-		for build in filter(lambda b: b.app == appTest.app and b.version in args.versions and b.lang in args.langs and b.lang in appTest.langs, builds):
-			run = Run(test, appTest, build)
-			runs.append(run)
+		if appTest.app in args.apps:
+			for b in builds:
+				if \
+					b.app == appTest.app and \
+					b.version in args.versions and \
+					b.lang in args.langs and \
+					b.lang in appTest.langs:
+					run = Run(test, appTest, b)
+					runs.append(run)
 
 print 'Plan:'
 for run in runs:
-	print '* %s/%s/%s' % (run.test.name, run.build.version.name, run.build.lang.name)
+	print '*', runId(run)
 
 estTime = ((args.warmupRuns + args.testRuns) * args.runDuration * len(runs))
 print 'Est time: %sm%ss' % (estTime / 60, estTime % 60)
 
 for run in runs:
 	print
-	print '=== %s/%s/%s ===' % (run.test.name, run.build.version.name, run.build.lang.name)
+	print '=== %s ===' % runId(run)
 	testResults = runTest(run.appTest, run.build)
 	print 'AVERAGE %12.2f' % (sum([r.rps for r in testResults])/len(testResults))
 
